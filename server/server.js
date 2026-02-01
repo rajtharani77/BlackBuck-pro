@@ -14,14 +14,15 @@ dotenv.config();
 const app = express();
 app.set('trust proxy', 1);
 
-app.use(express.json());
-app.use(cookieParser());
 app.use(cors({
   origin: 'https://blackbuck-pro.onrender.com', 
   credentials: true, // This allows the cookie to pass through
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'device-remember-token', 'Access-Control-Allow-Origin', 'Origin', 'Accept']
 }));
+
+app.use(express.json());
+app.use(cookieParser());
 
 const router = express.Router();
 
