@@ -6,9 +6,12 @@ const prisma = new PrismaClient();
 const protect = async (req, res, next) => {
   let token;
 
-  // 1. READ TOKEN FROM COOKIE (This is the critical fix)
   token = req.cookies.jwt;
-
+  console.log("------------------------------------------------");
+  console.log("Incoming Request to:", req.path);
+  console.log("Cookies Received:", req.cookies); 
+  console.log("Token Found:", token ? "YES" : "NO");
+  console.log("------------------------------------------------");
   if (token) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
@@ -28,7 +31,6 @@ const protect = async (req, res, next) => {
   }
 };
 
-// Check for specific roles (Admin/Manager)
 const authorize = (...roles) => {
   return (req, res, next) => {
     if (!req.user || !roles.includes(req.user.role)) {
