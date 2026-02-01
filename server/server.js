@@ -12,12 +12,15 @@ import { createTask, getTasks, updateTaskStatus } from './controllers/taskContro
 
 dotenv.config();
 const app = express();
+app.set('trust proxy', 1);
 
 app.use(express.json());
 app.use(cookieParser());
 app.use(cors({
-  origin: ['http://localhost:5173',process.env.CLIENT_URL],
-  credentials: true 
+  origin: 'https://blackbuck-pro.onrender.com', 
+  credentials: true, // This allows the cookie to pass through
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'device-remember-token', 'Access-Control-Allow-Origin', 'Origin', 'Accept']
 }));
 
 const router = express.Router();
