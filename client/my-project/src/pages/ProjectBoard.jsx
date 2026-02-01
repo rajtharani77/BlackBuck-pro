@@ -18,13 +18,19 @@ const ProjectBoard = () => {
 
   useEffect(() => {
     if (!user) return navigate('/login');
+
     const fetchData = async () => {
       try {
-        const taskRes = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/tasks/${id}`, { withCredentials: true });
+        // FIX: Add Authorization Header
+        const config = {
+          headers: { Authorization: `Bearer ${user.token}` },
+        };
+
+        const taskRes = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/tasks/${id}`, config);
         setTasks(taskRes.data);
         
         if (user.role === 'ADMIN' || user.role === 'MANAGER') {
-            const userRes = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/users`, { withCredentials: true });
+            const userRes = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/users`, config);
             setAllUsers(userRes.data);
         }
         
@@ -40,7 +46,11 @@ const ProjectBoard = () => {
   const handleCreateTask = async (e) => {
     e.preventDefault();
     try {
-      const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/tasks`, { ...newTask, projectId: id }, { withCredentials: true });
+      const config = {
+        headers: { Authorization: `Bearer ${user.token}` },
+      };
+
+      const res = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/tasks`, { ...newTask, projectId: id }, config);
       setTasks([res.data, ...tasks]);
       setShowTaskModal(false);
       setNewTask({ title: '', description: '', assignedToEmail: '' });
@@ -53,14 +63,19 @@ const ProjectBoard = () => {
     const updatedTasks = tasks.map(t => t.id === taskId ? { ...t, status: newStatus } : t);
     setTasks(updatedTasks);
     try {
-      await axios.patch(`${import.meta.env.VITE_API_BASE_URL}/tasks/${taskId}/status`, { status: newStatus }, { withCredentials: true });
+      const config = {
+         headers: { Authorization: `Bearer ${user.token}` },
+      };
+
+      await axios.patch(`${import.meta.env.VITE_API_BASE_URL}/tasks/${taskId}/status`, { status: newStatus }, config);
     } catch (err) {
       alert("You are not authorized to move this task!");
-      const originalRes = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/tasks/${id}`, { withCredentials: true });
-      setTasks(originalRes.data);
+      
     }
   };
 
+ 
+  
   const canMoveTask = (task) => {
     if (user.role === 'ADMIN') return true;
     if (user.role === 'MANAGER') return true; 
