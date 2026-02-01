@@ -9,7 +9,6 @@ const Dashboard = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { user } = useSelector((state) => state.auth);
-  
 
   const { projects = [], isLoading } = useSelector((state) => state.projects);
 
@@ -24,7 +23,11 @@ const Dashboard = () => {
       dispatch(getProjects());
       
       if (user.role === 'MANAGER' || user.role === 'ADMIN') {
-        axios.get(`${import.meta.env.VITE_API_BASE_URL}/users`, { withCredentials: true })
+        const config = {
+          headers: { Authorization: `Bearer ${user.token}` },
+        };
+
+        axios.get(`${import.meta.env.VITE_API_BASE_URL}/users`, config)
           .then(res => setAllUsers(res.data))
           .catch(err => console.error(err));
       }
