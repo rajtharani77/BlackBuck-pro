@@ -5,20 +5,37 @@ const API_URL = `${import.meta.env.VITE_API_BASE_URL}/projects/`;
 
 export const getProjects = createAsyncThunk('projects/getAll', async (_, thunkAPI) => {
   try {
-    const token = thunkAPI.getState().auth.user.token; 
-    const response = await axios.get(API_URL, { withCredentials: true });
+    const token = thunkAPI.getState().auth.user.token;
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const response = await axios.get(API_URL, config);
     return response.data;
   } catch (error) {
-    return thunkAPI.rejectWithValue(error.response.data.message);
+    const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+    return thunkAPI.rejectWithValue(message);
   }
 });
 
 export const createProject = createAsyncThunk('projects/create', async (projectData, thunkAPI) => {
   try {
-    const response = await axios.post(API_URL, projectData, { withCredentials: true });
+    const token = thunkAPI.getState().auth.user.token;
+    
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+
+    const response = await axios.post(API_URL, projectData, config);
     return response.data;
   } catch (error) {
-    return thunkAPI.rejectWithValue(error.response.data.message);
+    const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+    return thunkAPI.rejectWithValue(message);
   }
 });
 
