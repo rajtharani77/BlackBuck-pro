@@ -5,28 +5,46 @@ const API_URL = `${import.meta.env.VITE_API_BASE_URL}/tasks/`;
 
 export const getTasks = createAsyncThunk('tasks/get', async (projectId, thunkAPI) => {
   try {
-    const response = await axios.get(API_URL + projectId, { withCredentials: true });
+    const token = thunkAPI.getState().auth.user.token;
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+
+    const response = await axios.get(API_URL + projectId, config);
     return response.data;
   } catch (error) {
-    return thunkAPI.rejectWithValue(error.response.data.message);
+    const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+    return thunkAPI.rejectWithValue(message);
   }
 });
 
 export const createTask = createAsyncThunk('tasks/create', async (taskData, thunkAPI) => {
   try {
-    const response = await axios.post(API_URL, taskData, { withCredentials: true });
+    const token = thunkAPI.getState().auth.user.token;
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+
+    const response = await axios.post(API_URL, taskData, config);
     return response.data;
   } catch (error) {
-    return thunkAPI.rejectWithValue(error.response.data.message);
+    const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+    return thunkAPI.rejectWithValue(message);
   }
 });
 
 export const updateTaskStatus = createAsyncThunk('tasks/updateStatus', async ({ id, status }, thunkAPI) => {
   try {
-    const response = await axios.patch(`${API_URL}${id}/status`, { status }, { withCredentials: true });
+    const token = thunkAPI.getState().auth.user.token;
+    const config = {
+      headers: { Authorization: `Bearer ${token}` },
+    };
+
+    const response = await axios.patch(`${API_URL}${id}/status`, { status }, config);
     return response.data;
   } catch (error) {
-    return thunkAPI.rejectWithValue(error.response.data.message);
+    const message = (error.response && error.response.data && error.response.data.message) || error.message || error.toString();
+    return thunkAPI.rejectWithValue(message);
   }
 });
 
